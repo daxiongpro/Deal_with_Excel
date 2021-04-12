@@ -16,7 +16,7 @@ def list_to_dict(lst):
     return dic
 def main():
 
-    # df3 = pd.read_excel(r'C:\Users\Administrator\Desktop\yanglingli_initial_excel\df3.xlsx',
+    # df3 = pd.read_excel(r'C:\Users\Administrator\Desktop\initial_excels\df3.xlsx',
     #                     engine='openpyxl', usecols=['卡号'])
     df3 = pd.read_csv(r'C:\Users\Administrator\Desktop\yllCsv\df1.csv', encoding='gbk')
     # df3 = pd.read_excel(r'C:\Users\Administrator\Desktop\信息.xls')
