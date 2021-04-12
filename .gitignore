@@ -12,3 +12,5 @@ dist/
 *.xml
 *.iml
 *.idea
+*.xlsx
+*.csv
