@@ -12,12 +12,14 @@ file1 = r'C:\Users\Administrator\Desktop\yllCsv\df1.csv'
 file2 = r'C:\Users\Administrator\Desktop\yllCsv\df2.csv'
 file3 = r'C:\Users\Administrator\Desktop\yllCsv\df3.csv'
 file4 = r'C:\Users\Administrator\Desktop\yllCsv\df4.csv'
-result = r'C:\Users\Administrator\Desktop\yllCsv\result2.csv'
+result = r'C:\Users\Administrator\Desktop\yllCsv\result.csv'
+result2 = r'C:\Users\Administrator\Desktop\yllCsv\result2.csv'
 
 # df1 = pd.read_csv(file1, encoding='gbk')
 # df2 = pd.read_csv(file2, encoding='gbk')
-df3 = pd.read_csv(file3, encoding='gbk')
-df4 = pd.read_csv(file4)
+# df3 = pd.read_csv(file3, encoding='gbk')
+# df4 = pd.read_csv(file4)
+df5 = pd.read_csv(result)
 
 first = True
 
@@ -37,7 +39,8 @@ def list_to_dict(lst):
     return dic
 
 
-dic_in_df2 = list_to_dict(df4.iloc[:, 0])
+# dic_in_df2 = list_to_dict(df4.iloc[:, 0])
+dic_in_df5 = list_to_dict(df5.iloc[:, 0])
 
 
 def find_indexes(card_id):
@@ -90,7 +93,28 @@ def save(file, row3, row4):
         df.to_csv(file, mode='a', header=False, index=False)
 
 
-def main2(fromIndex):
+def find_close_time_in_df(df, indexes_in_df4, t1):
+    flag = False  # 是否找到过一个
+
+    now_index = None
+    for index in indexes_in_df4:
+        row = df.iloc[index, :]
+        # 第一次找到之前比较只需看是否在地铁时间之后
+        if flag == False:
+            if t1 < datetime.strptime(row[3], "%H:%M:%S"):
+                now_close_time = datetime.strptime(row[3], "%H:%M:%S")
+                now_index = index
+                flag = True
+        # 第二次之后的比较，需要与
+        else:
+            if t1 < datetime.strptime(row[3], "%H:%M:%S") < now_close_time:
+                now_close_time = datetime.strptime(row[3], "%H:%M:%S")
+                now_index = index
+
+    return now_index
+
+
+def main(fromIndex):
     global first
     if fromIndex == 0:
         first = True
@@ -103,21 +127,75 @@ def main2(fromIndex):
             indexes_in_df4 = find_indexes(card_id)
             # 在df4中找到了
             if len(indexes_in_df4) != 0:
-                for index2 in indexes_in_df4:
-                    # 地铁下车时间
-                    t1 = datetime.strptime(row[3], "%H:%M:%S")
-                    # 公交上车时间
-                    t2 = datetime.strptime(df4.iloc[index2, 3], "%H:%M:%S")
-                    # 公交时间在地铁时间之后
-                    if t2 > t1:
-                        save(result, row, df4.iloc[index2, :])
-                        print('第', index, '行写入成功！')
-                        break
+                t1 = datetime.strptime(row[3], "%H:%M:%S")
+                # 找出在df4中位置为indexes_in_df4的时间与t1最近的那行的index,没找到返回None
+                close_index = find_close_time_in_df(df4, indexes_in_df4, t1)
+                if close_index != None:
+                    save(result, row, df4.iloc[close_index, :])
+                    print('第', index, '行写入成功！')
                 else:
                     print('卡号：', row[0], '公交上车时间都在地铁时间之前')
+                # t2 = datetime.strptime(t2_str, "%H:%M:%S")
+                # for index2 in indexes_in_df4:
+                #     # 地铁下车时间
+                #     t1 = datetime.strptime(row[3], "%H:%M:%S")
+                #     # 公交上车时间
+                #
+                #     t2 = datetime.strptime(df4.iloc[index2, 3], "%H:%M:%S")
+                #     # 公交时间在地铁时间之后
+                #     if t2 > t1:
+                #         save(result, row, df4.iloc[index2, :])
+                #         print('第', index, '行写入成功！')
+                #         break
+                # else:
+                #     print('卡号：', row[0], '公交上车时间都在地铁时间之前')
             else:
                 print('没找到第', index, '行的id', row[0])
 
 
+def get_max_index(indexes):
+    max_index = indexes[0]
+    max_time = datetime.strptime(df5.iloc[indexes[0], 3], "%H:%M:%S")
+    for index in indexes:
+        time2 = datetime.strptime(df5.iloc[index, 3], "%H:%M:%S")
+        if time2 > max_time:
+            max_time = time2
+            max_index = index
+    return max_index
+
+
+def drop_not_max_index(indexes):
+    # global df5
+    delete_index = []
+    max_index = get_max_index(indexes)
+    for index in indexes:
+        if index != max_index:
+            delete_index.append(index)
+
+    return delete_index
+
+
+def main2():
+    i = 0
+    delete_index = []
+    for card_id, indexes in dic_in_df5.items():
+
+        if len(indexes) > 1:
+            item_delete_index = drop_not_max_index(indexes)
+
+            delete_index.extend(item_delete_index)
+        print('第', i, '行处理完毕')
+        i += 1
+
+    print(delete_index)
+    df = df5.drop(index=delete_index)
+    print('开始写入')
+    df.to_csv(result2, mode='w', header=True, index=False)
+
+
 if __name__ == '__main__':
-    main2(0)
+    # main(0)
+    print(dic_in_df5)
+    print(len(df5))
+    print(df5.iloc[27578, :])
+    main2()
