@@ -21,6 +21,6 @@
  <p><font size="2">配置pycharm的工作目录</font></p>
 </div>
 
-* 将数据文件放在static/initial_excels文件夹中
+* 将数据文件放在static/initial_excels文件夹中(数据文件在with_initial_excel_file分支)
 * 运行文件为：main.py
 * 跑完后输出的数据文件存放在static/csvFiles/result.csv中
