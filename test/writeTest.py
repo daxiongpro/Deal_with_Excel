@@ -16,12 +16,12 @@ def list_to_dict(lst):
     return dic
 def main():
 
-    # subway = pd.read_excel(r'C:\Users\Administrator\Desktop\initial_excels\subway.xlsx',
+    # subway_df = pd.read_excel(r'C:\Users\Administrator\Desktop\initial_excels\subway_df.xlsx',
     #                     engine='openpyxl', usecols=['卡号'])
     df1 = pd.read_csv(r'C:\Users\Administrator\Desktop\yllCsv\df1.csv', encoding='gbk')
     df2 = pd.read_csv(r'C:\Users\Administrator\Desktop\yllCsv\df2.csv', encoding='gbk')
-    # subway = pd.read_excel(r'C:\Users\Administrator\Desktop\信息.xls')
-    # subway = pd.read_excel(r'C:\Users\Administrator\Desktop\yllTest\subway.xlsx')
+    # subway_df = pd.read_excel(r'C:\Users\Administrator\Desktop\信息.xls')
+    # subway_df = pd.read_excel(r'C:\Users\Administrator\Desktop\yllTest\subway_df.xlsx')
 
     df1.to_csv(r'C:\Users\Administrator\Desktop\yllCsv\df4.csv', mode='w', header=True, index=False)
     df2.to_csv(r'C:\Users\Administrator\Desktop\yllCsv\df4.csv', mode='a', header=False, index=False)

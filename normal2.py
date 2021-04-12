@@ -10,8 +10,8 @@ file3 = r'C:\Users\Administrator\Desktop\yllCsv\df3.csv'
 file4 = r'C:\Users\Administrator\Desktop\yllCsv\df4.csv'
 result = r'C:\Users\Administrator\Desktop\yllCsv\result.csv'
 
-# bus1 = pd.read_csv(file1, encoding='gbk')
-# bus2 = pd.read_csv(file2, encoding='gbk')
+# bus1_df = pd.read_csv(file1, encoding='gbk')
+# bus2_df = pd.read_csv(file2, encoding='gbk')
 df3 = pd.read_csv(file3, encoding='gbk')
 df4 = pd.read_csv(file4)
 

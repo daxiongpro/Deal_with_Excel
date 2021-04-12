@@ -7,7 +7,7 @@ file2 = r'C:\Users\Administrator\Desktop\数据结构与算法-实验课成绩_p
 
 df1 = pd.read_excel(file1)
 df2 = pd.read_excel(file2)
-# print(bus2)
+# print(bus2_df)
 cols = df2.iloc[4:, 10]
-# cols = bus1.iloc[:, 4]
+# cols = bus1_df.iloc[:, 4]
 print(cols)

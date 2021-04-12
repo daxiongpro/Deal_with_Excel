@@ -16,11 +16,11 @@ def list_to_dict(lst):
     return dic
 def main():
 
-    # subway = pd.read_excel(r'C:\Users\Administrator\Desktop\initial_excels\subway.xlsx',
+    # subway_df = pd.read_excel(r'C:\Users\Administrator\Desktop\initial_excels\subway_df.xlsx',
     #                     engine='openpyxl', usecols=['卡号'])
     df3 = pd.read_csv(r'C:\Users\Administrator\Desktop\yllCsv\df1.csv', encoding='gbk')
-    # subway = pd.read_excel(r'C:\Users\Administrator\Desktop\信息.xls')
-    # subway = pd.read_excel(r'C:\Users\Administrator\Desktop\yllTest\subway.xlsx')
+    # subway_df = pd.read_excel(r'C:\Users\Administrator\Desktop\信息.xls')
+    # subway_df = pd.read_excel(r'C:\Users\Administrator\Desktop\yllTest\subway_df.xlsx')
 
     #获取最大行，最大列
     nrows3=df3.shape[0]

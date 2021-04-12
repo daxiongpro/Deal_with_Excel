@@ -22,44 +22,82 @@ first = True
 
 class Deal():
     def __init__(self):
-        file1 = 'static/csvFiles/bus1.csv'
-        file2 = 'static/csvFiles/bus2.csv'
-        file3 = 'static/csvFiles/subway.csv'
-        file4 = 'static/csvFiles/bus_all.csv'
+        file1 = 'static/csvFiles/bus1_df.csv'
+        file2 = 'static/csvFiles/bus2_df.csv'
+        file3 = 'static/csvFiles/subway_df.csv'
+        file4 = 'static/csvFiles/bus_all_df.csv'
         result = 'static/csvFiles/result.csv'
 
-        self.bus1 = pd.read_csv(file1, encoding='gbk')
-        self.bus2 = pd.read_csv(file2, encoding='gbk')
-        self.subway = pd.read_csv(file3, encoding='gbk')
-        self.bus_all = pd.read_csv(file4)
-        self.result_csv = pd.read_csv(result)
+        self.bus1_df = pd.read_csv(file1, encoding='gbk')
+        self.bus2_df = pd.read_csv(file2, encoding='gbk')
+        self.subway_df = pd.read_csv(file3, encoding='gbk')
+        self.bus_all_df = pd.read_csv(file4)
+        self.result_csv_df = pd.read_csv(result)
 
-        self.dic_in_df2 = self._list_to_dict(self.bus_all.iloc[:, 0])
-        self.dic_in_df5 = self._list_to_dict(self.result_csv.iloc[:, 0])
+        self.bus_dic = self._list_to_dict(self.bus_all_df.iloc[:, 0])
+        # self.dic_in_df5 = self._list_to_dict(self.result_csv_df.iloc[:, 0])
 
-    def _list_to_dict(self, lst):
+    def run(self):
+        for index, row in self.subway_df.iterrows():
+            card_id = row[0]
+            # 从df4中找idCard，返回index列表，没找到返回空列表
+            indexes_df4 = self._find_indexes(card_id)
+            # 在df4中找到了
+            if len(indexes_df4) != 0:
+
+                subway_time = datetime.strptime(row[3], "%H:%M:%S")  # 地铁出站时间
+                # 找出在df4中位置为indexes_in_df4的时间与t1最近的那行的index,没找到返回None
+                close_index = self._find_closest_time(self.bus_all_df, indexes_df4, subway_time)
+                if close_index != None:
+                    self._save(self.result, row, self.bus_all_df.iloc[close_index, :])
+                    print('第', index, '行写入成功！')
+                else:
+                    print('卡号：', row[0], '公交上车时间都在地铁时间之前')
+            else:
+                print('没找到第', index, '行的id', row[0])
+
+    def _list_to_dict(self, list_):
         """
         返回：{元素:[元素对应的位置]}
-        :param list: 重复元素的列表。ls = ['a', 'b', 'c', 'a']
+        :param list_: 重复元素的列表。ls = ['a', 'b', 'c', 'a']
         :return: {'a': [0, 3], 'b': [1], 'c': [2]}
-
         """
-        dic = {}
-        for value in lst:
-            dic[value] = []
-        for index, value in enumerate(lst):
-            dic[value].append(index)
-
-        return dic
+        dict_ = {}
+        for value in list_:
+            dict_[value] = []
+        for index, value in enumerate(list_):
+            dict_[value].append(index)
+        return dict_
 
     def _find_indexes(self, card_id):
         # 从df4中找idCard，返回index列表，没找到返回空列表
         # 先建立哈希表
 
-        if card_id in self.dic_in_df2.keys():
-            return self.dic_in_df2[card_id]
+        if card_id in self.bus_dic.keys():
+            return self.bus_dic[card_id]
         else:
             return []
+
+    def _find_closest_time(self, df, indexes_in_df4, time):
+        # 在df中找到与time最接近的时间，并返回这一行的index
+        flag = False  # 是否找到过一个
+
+        now_index = None
+        for index in indexes_in_df4:
+            row = df.iloc[index, :]
+            # 第一次找到之前比较只需看是否在地铁时间之后
+            if flag == False:
+                if time < datetime.strptime(row[3], "%H:%M:%S"):
+                    now_close_time = datetime.strptime(row[3], "%H:%M:%S")
+                    now_index = index
+                    flag = True
+            # 第二次之后的比较，需要与
+            else:
+                if time < datetime.strptime(row[3], "%H:%M:%S") < now_close_time:
+                    now_close_time = datetime.strptime(row[3], "%H:%M:%S")
+                    now_index = index
+
+        return now_index
 
     def _save(self, file, row_subway, row_bus):
         """
@@ -100,47 +138,6 @@ class Deal():
         else:
             df.to_csv(file, mode='a', header=False, index=False)
 
-    def _find_closest_time(self, df, indexes_in_df4, time):
-        # 在df中找到与time最接近的时间，并返回这一行的index
-        flag = False  # 是否找到过一个
-
-        now_index = None
-        for index in indexes_in_df4:
-            row = df.iloc[index, :]
-            # 第一次找到之前比较只需看是否在地铁时间之后
-            if flag == False:
-                if time < datetime.strptime(row[3], "%H:%M:%S"):
-                    now_close_time = datetime.strptime(row[3], "%H:%M:%S")
-                    now_index = index
-                    flag = True
-            # 第二次之后的比较，需要与
-            else:
-                if time < datetime.strptime(row[3], "%H:%M:%S") < now_close_time:
-                    now_close_time = datetime.strptime(row[3], "%H:%M:%S")
-                    now_index = index
-
-        return now_index
-
-    def run(self):
-        for index, row in self.subway.iterrows():
-            card_id = row[0]
-            # 从df4中找idCard，返回index列表，没找到返回空列表
-            indexes_df4 = self._find_indexes(card_id)
-            # 在df4中找到了
-            if len(indexes_df4) != 0:
-
-                subway_time = datetime.strptime(row[3], "%H:%M:%S")  # 地铁出站时间
-                # 找出在df4中位置为indexes_in_df4的时间与t1最近的那行的index,没找到返回None
-                close_index = self._find_closest_time(self.bus_all, indexes_df4, subway_time)
-                if close_index != None:
-                    self._save(self.result, row, self.bus_all.iloc[close_index, :])
-                    print('第', index, '行写入成功！')
-                else:
-                    print('卡号：', row[0], '公交上车时间都在地铁时间之前')
-            else:
-                print('没找到第', index, '行的id', row[0])
-
-
 
 class OtherCode():
 
@@ -154,9 +151,8 @@ class OtherCode():
                 max_index = index
         return max_index
 
-
     def drop_not_max_index(indexes):
-        # global result_csv
+        # global result_csv_df
         delete_index = []
         max_index = get_max_index(indexes)
         for index in indexes:
@@ -164,7 +160,6 @@ class OtherCode():
                 delete_index.append(index)
 
         return delete_index
-
 
     def main2():
         i = 0
@@ -187,6 +182,6 @@ class OtherCode():
 if __name__ == '__main__':
     # main(0)
     # print(dic_in_df5)
-    # print(len(result_csv))
-    # print(result_csv.iloc[27578, :])
+    # print(len(result_csv_df))
+    # print(result_csv_df.iloc[27578, :])
     main2()
