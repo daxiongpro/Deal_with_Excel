@@ -27,7 +27,7 @@ class Deal():
         subway_csv = 'static/csvFiles/df3.csv'
         bus_all_csv = 'static/csvFiles/df4.csv'
         self.result_path = 'static/csvFiles/result.csv'
-
+        # 将csv转换成pandas的dataframe格式
         self.subway_df = pd.read_csv(subway_csv, encoding='gbk')
         self.bus_all_df = pd.read_csv(bus_all_csv)
 

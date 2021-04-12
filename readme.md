@@ -10,9 +10,17 @@
 ## 使用的技术
 * 使用python的pandas库
 * 杨玲莉给的初始excel在文件夹“yanglingli_initial_excel”中，命名为df1,df2,df3
-* pandas 无法处理.xlsx文件，因此，先转换成.csv文件
+* pandas 无法处理.xlsx文件,因此,先转换成.csv文件,使用excel手工转换成csv文件,存放在static/csvFile文件夹中
+* 手工将df1，df2合并成df4，转换成一张表
 
 ## 运行：
 * 笔者使用的是pycharm
-* 运行文件为：succeed.py
-* 运行前将工作目录转换成项目根目录，(本项目为/Excel)
+* 运行前将工作目录转换成项目根目录，(本项目为/Excel)，如图：
+<div align="center">
+ <img src="static/pictures/pic1.png">
+ <p><font size="2">配置pycharm的工作目录</font></p>
+</div>
+
+* 将数据文件放在static/initial_excels文件夹中
+* 运行文件为：main.py
+* 跑完后输出的数据文件存放在static/csvFiles/result.csv中
